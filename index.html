@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>永历纪年</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f2e9;
+            color: #333;
+            line-height: 1.6;
+            background-image: linear-gradient(to bottom, #f5f2e9 0%, #e8e1d1 100%);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background-color: #8b1a1a;
+            color: #fff;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(139, 26, 26, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="80" font-size="80" fill="rgba(255,255,255,0.05)">明</text></svg>');
+            background-repeat: repeat;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .converter-section, .daicing-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .info-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        h2 {
+            color: #8b1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8d7b2;
+            font-size: 1.8rem;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: #8b1a1a;
+            outline: none;
+        }
+        
+        .btn {
+            background-color: #8b1a1a;
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            background-color: #6a1313;
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f5eb;
+            border-radius: 8px;
+            border-left: 5px solid #8b1a1a;
+            text-align: center;
+        }
+        
+        .result h3 {
+            color: #8b1a1a;
+            margin-bottom: 10px;
+        }
+        
+        .year-result {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #8b1a1a;
+            margin: 15px 0;
+        }
+        
+        .additional-info {
+            font-style: italic;
+            color: #666;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+        
+        .timeline {
+            margin-top: 25px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .timeline-year {
+            min-width: 100px;
+            font-weight: bold;
+            color: #8b1a1a;
+        }
+        
+        .timeline-event {
+            flex: 1;
+        }
+        
+        .batch-converter {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #eee;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            min-height: 120px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        
+        .examples {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .historical-note {
+            background-color: #f0f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            border-left: 5px solid #3a7bd5;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            color: #8b1a1a;
+            cursor: help;
+            border-bottom: 1px dotted #8b1a1a;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-history"></i>永历纪年</h1>
+        </header>
+        
+        <div class="content">
+            <section class="converter-section">
+                <h2>纪年换算</h2>
+                
+                <div class="input-group">
+                    <label for="yearType">年份类型：</label>
+                    <select id="yearType">
+                        <option value="yongli">永历</option>
+                        <option value="ad">公元</option>
+                        <option value="republic">民国</option>
+                        <option value="shunzhi">伪清顺治</option>
+                        <option value="kangxi">伪清康熙</option>
+                        <option value="yongzheng">伪清雍正</option>
+                        <option value="qianlong">伪清乾隆</option>
+                        <option value="jiaqing">伪清嘉庆</option>
+                        <option value="daoguang">伪清道光</option>
+                        <option value="xianfeng">伪清咸丰</option>
+                        <option value="tongzhi">伪清同治</option>
+                        <option value="guangxu">伪清光绪</option>
+                        <option value="xuantong">伪清宣统</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="yearInput">输入年份：</label>
+                    <input type="number" id="yearInput" placeholder="例如：1650" min="1" max="10000" value="1">
+                </div>
+                
+                <button id="convertBtn" class="btn">
+                    <i class="fas fa-exchange-alt"></i> 换算纪年
+                </button>
+                
+                <div id="resultBox" class="result" style="display: none;">
+                    <h3>换算结果</h3>
+                    <div id="yearResult" class="year-result"></div>
+                    <div id="additionalInfo" class="additional-info"></div>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>永历纪年计算器</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearInput = document.getElementById('yearInput');
+            const yearType = document.getElementById('yearType');
+            const convertBtn = document.getElementById('convertBtn');
+            const resultBox = document.getElementById('resultBox');
+            const yearResult = document.getElementById('yearResult');
+            const additionalInfo = document.getElementById('additionalInfo');
+            
+            // 永历元年对应的公元年份
+            const YONGLI_START_YEAR = 1647;
+            // 永历结束年份（假设延续到公元3000年）
+            const YONGLI_END_YEAR = 3000;
+            // 民国元年对应的公元年份
+            const REPUBLIC_START_YEAR = 1912;
+            
+            // 单个年份换算
+            convertBtn.addEventListener('click', function() {
+                const inputYear = parseInt(yearInput.value);
+                const selectedType = yearType.value;
+                
+                if (isNaN(inputYear) || inputYear < 1) {
+                    alert('请输入有效的年份');
+                    return;
+                }
+                
+                // 根据选择的年份类型进行换算
+                if (selectedType === 'ad') {
+                    // 公元年份输入
+                    convertADToAll(inputYear);
+                } else if (selectedType === 'yongli') {
+                    // 永历年份输入
+                    convertYongliToAll(inputYear);
+                } else if (selectedType === 'republic') {
+                    // 民国年份输入
+                    convertRepublicToAll(inputYear);
+                } else {
+                    // 伪清年号年份输入
+                    convertDaicingToAll(selectedType, inputYear);
+                }
+                
+                resultBox.style.display = 'block';
+            });
+            
+            
+            // 公元年份转换为所有纪年
+            function convertADToAll(adYear) {
+                let resultHTML = '';
+                let infoHTML = '';
+
+                // 永历纪年
+                if (adYear < YONGLI_START_YEAR) {
+                    resultHTML += `<div style="font-size:1.8rem; margin-bottom: 10px;">此时尚未开始使用永历纪年</div>`;
+                    infoHTML += `<p>永历纪年开始于公元1647年（永历元年）。</p>`;
+                } else {
+                    const yongliYear = adYear - YONGLI_START_YEAR + 1;
+                    resultHTML += `<div style="font-size:1.8rem; margin-bottom: 10px;">永历${yongliYear}年</div>`;
+                }
+                
+                // 公元纪年
+                resultHTML += `<div style="font-size:1.5rem; margin-bottom: 10px;">公元${adYear}年</div>`;        
+                
+                // 民国纪年
+                const republicInfo = getRepublicYearInfo(adYear);
+                if (republicInfo) {
+                    resultHTML += `<div style="font-size:1.4rem; margin-bottom: 10px; color: #1a5c8b;">${republicInfo.display}</div>`;
+                } else {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px; color: #666;">此时尚未开始使用民国纪年</div>`;
+                }
+                
+                // 伪清纪年
+                const daicingInfo = getDaicingYearInfo(adYear);
+                if (daicingInfo) {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px;">伪清 ${daicingInfo.display}</div>`;
+                } else {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px;">不在伪清纪年范围内</div>`;
+                }
+                
+                yearResult.innerHTML = resultHTML;
+                additionalInfo.innerHTML = infoHTML;
+            }
+            
+            // 永历年份转换为所有纪年
+            function convertYongliToAll(yongliYear) {
+                let resultHTML = '';
+                let infoHTML = '';
+                
+                if (yongliYear < 1) {
+                    yearResult.innerHTML = `永历${yongliYear}年`;
+                    additionalInfo.innerHTML = `<p>永历纪年不存在此年份。永历纪年开始于永历元年（公元1647年）。</p>`;
+                    return;
+                }
+                
+                const adYear = YONGLI_START_YEAR + yongliYear - 1;
+                
+                // 永历纪年
+                resultHTML += `<div style="font-size:1.8rem; margin-bottom: 10px;">永历${yongliYear}年</div>`;
+
+                // 公元纪年
+                resultHTML += `<div style="font-size:1.5rem; margin-bottom: 10px;">公元${adYear}年</div>`;
+                
+                // 民国纪年
+                const republicInfo = getRepublicYearInfo(adYear);
+                if (republicInfo) {
+                    resultHTML += `<div style="font-size:1.4rem; margin-bottom: 10px; color: #1a5c8b;">${republicInfo.display}</div>`;
+                } else {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px; color: #666;">此时尚未开始使用民国纪年</div>`;
+                }
+                
+                // 伪清纪年
+                const daicingInfo = getDaicingYearInfo(adYear);
+                if (daicingInfo) {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px;">伪清 ${daicingInfo.display}</div>`;
+                } else {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px;">不在伪清纪年范围内</div>`;
+                }
+                
+                yearResult.innerHTML = resultHTML;
+                additionalInfo.innerHTML = infoHTML;
+            }
+
+            // 民国年份转换为所有纪年
+            function convertRepublicToAll(republicYear) {
+                let resultHTML = '';
+                let infoHTML = '';
+                
+                if (republicYear < 1) {
+                    yearResult.innerHTML = `民国${republicYear}年`;
+                    additionalInfo.innerHTML = `<p>民国纪年不存在此年份。民国纪年开始于民国元年（公元1912年）。</p>`;
+                    return;
+                }
+                
+                const adYear = REPUBLIC_START_YEAR + republicYear - 1;
+                
+                // 永历纪年
+                if (adYear < YONGLI_START_YEAR) {
+                    resultHTML += `<div style="font-size:1.8rem; margin-bottom: 10px;">此时尚未开始使用永历纪年</div>`;
+                    infoHTML += `<p>永历纪年开始于公元1647年（永历元年）。</p>`;
+                } else {
+                    const yongliYear = adYear - YONGLI_START_YEAR + 1;
+                    resultHTML += `<div style="font-size:1.8rem; margin-bottom: 10px;">永历${yongliYear}年</div>`;
+                }
+                
+                // 公元纪年
+                resultHTML += `<div style="font-size:1.5rem; margin-bottom: 10px;">公元${adYear}年</div>`;
+                
+                // 民国纪年
+                resultHTML += `<div style="font-size:1.4rem; margin-bottom: 10px; color: #1a5c8b;">民国${republicYear}年</div>`;
+                
+                // 伪清纪年
+                const daicingInfo = getDaicingYearInfo(adYear);
+                if (daicingInfo) {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px;">伪清 ${daicingInfo.display}</div>`;
+                } else {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px;">不在伪清纪年范围内</div>`;
+                }
+                
+                yearResult.innerHTML = resultHTML;
+                additionalInfo.innerHTML = infoHTML;
+            }
+
+            // 伪清年号起始年份映射（公元）
+            const DAICING_ERA_START = {
+                shunzhi: 1644,
+                kangxi: 1662,
+                yongzheng: 1723,
+                qianlong: 1736,
+                jiaqing: 1796,
+                daoguang: 1821,
+                xianfeng: 1851,
+                tongzhi: 1862,
+                guangxu: 1875,
+                xuantong: 1909
+            };
+
+            // 伪清年号结束年份映射（公元）
+            const DAICING_ERA_END = {
+                shunzhi: 1661,
+                kangxi: 1722,
+                yongzheng: 1735,
+                qianlong: 1795,
+                jiaqing: 1820,
+                daoguang: 1850,
+                xianfeng: 1861,
+                tongzhi: 1874,
+                guangxu: 1908,
+                xuantong: 1911
+            };
+
+            // 伪清年号中文名称
+            const DAICING_ERA_NAMES = {
+                shunzhi: "顺治",
+                kangxi: "康熙",
+                yongzheng: "雍正",
+                qianlong: "乾隆",
+                jiaqing: "嘉庆",
+                daoguang: "道光",
+                xianfeng: "咸丰",
+                tongzhi: "同治",
+                guangxu: "光绪",
+                xuantong: "宣统"
+            };
+
+            // 根据公元年份获取伪清纪年信息
+            function getDaicingYearInfo(adYear) {
+                for (const era in DAICING_ERA_START) {
+                    const start = DAICING_ERA_START[era];
+                    const end = DAICING_ERA_END[era];
+                    if (adYear >= start && adYear <= end) {
+                        const year = adYear - start + 1;
+                        return {
+                            era: era,
+                            name: DAICING_ERA_NAMES[era],
+                            year: year,
+                            display: `${DAICING_ERA_NAMES[era]}${year}年`
+                        };
+                    }
+                }
+                return null;
+            }
+
+            // 根据公元年份获取民国纪年信息
+            function getRepublicYearInfo(adYear) {
+                if (adYear < REPUBLIC_START_YEAR) {
+                    return null;
+                }
+                const republicYear = adYear - REPUBLIC_START_YEAR + 1;
+                return {
+                    year: republicYear,
+                    display: `民国${republicYear}年`
+                };
+            }
+            
+            // 伪清年号年份转换为所有纪年
+            function convertDaicingToAll(era, year) {
+                let resultHTML = '';
+                let infoHTML = '';
+                
+                const startYear = DAICING_ERA_START[era];
+                const endYear = DAICING_ERA_END[era];
+                const eraName = DAICING_ERA_NAMES[era];
+                const adYear = startYear + year - 1;
+                
+                if (year < 1) {
+                    yearResult.innerHTML = `${eraName}${year}年`;
+                    additionalInfo.innerHTML = `<p>请输入有效的年份。</p>`;
+                    return;
+                }
+
+                // 永历纪年
+                if (adYear < YONGLI_START_YEAR) {
+                    resultHTML += `<div style="font-size:1.8rem; margin-bottom: 10px;">此时尚未开始使用永历纪年</div>`;
+                    infoHTML += `<p>永历纪年开始于公元1647年（永历元年）。</p>`;
+                } else {
+                    const yongliYear = adYear - YONGLI_START_YEAR + 1;
+                    resultHTML += `<div style="font-size:1.8rem; margin-bottom: 10px;">永历${yongliYear}年</div>`;
+                }
+                
+                // 公元纪年
+                resultHTML += `<div style="font-size:1.5rem; margin-bottom: 10px;">公元${adYear}年</div>`;
+                
+                // 民国纪年
+                const republicInfo = getRepublicYearInfo(adYear);
+                if (republicInfo) {
+                    resultHTML += `<div style="font-size:1.4rem; margin-bottom: 10px; color: #1a5c8b;">${republicInfo.display}</div>`;
+                } else {
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px; color: #666;">此时尚未开始使用民国纪年</div>`;
+                }
+
+                if (adYear > endYear) {
+                    infoHTML = `<p>伪清${eraName}年号仅使用到${endYear}年（${eraName}${endYear - startYear + 1}年）。</p>`;
+                }
+                else
+                {
+                    // 伪清纪年
+                    resultHTML += `<div style="font-size:1.2rem; margin-bottom: 10px;">伪清 ${eraName}${year}年</div>`;          
+                }                
+                
+                yearResult.innerHTML = resultHTML;
+                additionalInfo.innerHTML = infoHTML;
+            }
+            
+            // 切换年份类型时更新输入框提示
+            yearType.addEventListener('change', function() {
+                const selectedType = this.value;
+                if (selectedType === 'ad') {
+                    yearInput.placeholder = "例如：1650 (公元年份)";
+                    yearInput.value = "1650";
+                } else if (selectedType === 'yongli') {
+                    yearInput.placeholder = "例如：5 (永历年份)";
+                    yearInput.value = "5";
+                } else if (selectedType === 'republic') {
+                    yearInput.placeholder = "例如：1 (民国年份)";
+                    yearInput.value = "1";
+                } else {
+                    // 伪清年号
+                    yearInput.placeholder = "例如：1 (年号年份)";
+                    yearInput.value = "1";
+                }
+            });
+            
+            // 初始加载时执行一次换算
+            convertBtn.click();
+        });
+    </script>
+</body>
+</html>
